@@ -2,15 +2,15 @@ package read
 
 import (
 	"fmt"
+	"log"
 
 	"google.golang.org/api/calendar/v3"
 )
 
-func getEvents(srv *calendar.Service) ([]*calendar.Event, error) {
-	events, err := srv.Events.List("primary").Do()
+func ReadCalendar(srv *calendar.Service, calendarId string, event *calendar.Event) {
+	fetchedEvent, err := srv.Events.Get(calendarId, event.Id).Do()
 	if err != nil {
-		return nil, fmt.Errorf("gagal mengambil daftar event: %v", err)
+		log.Fatalf("Unable to get event. %v\n", err)
 	}
-	return events.Items, nil
+	fmt.Printf("Event fetched: %s\n", fetchedEvent.HtmlLink)
 }
-

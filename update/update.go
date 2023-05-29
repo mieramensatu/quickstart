@@ -2,14 +2,15 @@ package update
 
 import (
 	"fmt"
+	"log"
 
 	"google.golang.org/api/calendar/v3"
 )
 
-func updateEvent(srv *calendar.Service, event *calendar.Event) (*calendar.Event, error) {
-	event, err := srv.Events.Update("primary", event.Id, event).Do()
+func UpdateCalendar(srv *calendar.Service, calendarId string, event *calendar.Event) {
+	updatedEvent, err := srv.Events.Update(calendarId, event.Id, event).Do()
 	if err != nil {
-		return nil, fmt.Errorf("gagal mengupdate event: %v", err)
+		log.Fatalf("Unable to update event. %v\n", err)
 	}
-	return event, nil
+	fmt.Printf("Event updated: %s\n", updatedEvent.HtmlLink)
 }
