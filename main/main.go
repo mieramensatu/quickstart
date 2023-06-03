@@ -13,6 +13,11 @@ import (
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/calendar/v3"
 	"google.golang.org/api/option"
+
+	"github.com/mieramensatu/quickstart.git/create"
+	"github.com/mieramensatu/quickstart.git/delete"
+	"github.com/mieramensatu/quickstart.git/read"
+	"github.com/mieramensatu/quickstart.git/update"
 )
 
 // Retrieve a token, saves the token, then returns the generated client.
@@ -89,51 +94,38 @@ func main() {
 		log.Fatalf("Unable to retrieve Calendar client: %v", err)
 	}
 
+	event := &calendar.Event{
+		Summary:     "event wibu",
+		Location:    "bandung bec",
+		Description: "cosplay jadi dazai",
+		Start: &calendar.EventDateTime{
+			DateTime: "2023-06-1T13:00:00Z",
+			TimeZone: "UTC",
+		},
+		End: &calendar.EventDateTime{
+			DateTime: "2023-06-1T21:00:00Z",
+			TimeZone: "UTC",
+		},
+	}
+
+	create.CreateCalendar(srv, "primary", event)
+
 	t := time.Now().Format(time.RFC3339)
 	events, err := srv.Events.List("primary").ShowDeleted(false).
 		SingleEvents(true).TimeMin(t).MaxResults(10).OrderBy("startTime").Do()
 	if err != nil {
 		log.Fatalf("Unable to retrieve next ten of the user's events: %v", err)
 	}
-	fmt.Println("Upcoming events:")
-	if len(events.Items) == 0 {
-		fmt.Println("No upcoming events found.")
-	} else {
-		for _, item := range events.Items {
-			date := item.Start.DateTime
-			if date == "" {
-				date = item.Start.Date
-			}
-			fmt.Printf("%v (%v)\n", item.Summary, date)
-		}
-	}
-	// Refer to the Go quickstart on how to setup the environment:
-	// https://developers.google.com/calendar/quickstart/go
-	// Change the scope to calendar.CalendarScope and delete any stored credentials.
 
-	event := &calendar.Event{
-		Summary:     events.Summary,
-		Description: events.Description,
-		Start: &calendar.EventDateTime{
-			DateTime: "2023-05-28T09:00:00-07:00",
-			TimeZone: "Asia/Jakarta",
-		},
-		End: &calendar.EventDateTime{
-			DateTime: "2023-05-28T17:00:00-07:00",
-			TimeZone: "Asia/Jakarta",
-		},
-		Recurrence: []string{"RRULE:FREQ=DAILY;COUNT=2"},
-		Attendees: []*calendar.EventAttendee{
-			{Email: "sasakihaise985@gmail.com"},
-			{Email: "nayakat74@gmail.com"},
-		},
-	}
+	if len(events.Items) > 0 {
+		eventToDelete := events.Items[0]
+		delete.DeleteCalendar(srv, "primary", eventToDelete)
 
-	calendarId := "primary"
-	event, err = srv.Events.Insert(calendarId, event).Do()
-	if err != nil {
-		log.Fatalf("Unable to create event. %v\n", err)
-	}
-	fmt.Printf("Event created: %s\n", event.HtmlLink)
+		eventToUpdate := events.Items[0]
+		eventToUpdate.Summary = "ke bec"
+		update.UpdateCalendar(srv, "primary", eventToUpdate)
 
+		eventToRead := events.Items[0]
+		read.ReadCalendar(srv, "primary", eventToRead)
+	}
 }
