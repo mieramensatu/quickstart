@@ -1,10 +1,9 @@
 package delete
 
 import (
-	"google.golang.org/api/calendar/v3"
 	"log"
 
-	"github.com/mieramensatu/quickstart.git/create"
+	"google.golang.org/api/calendar/v3"
 )
 
 // DeleteEvent deletes an existing event from Google Calendar
