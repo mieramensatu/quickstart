@@ -12,5 +12,5 @@ func CreateCalendar(srv *calendar.Service, calendarId string, event *calendar.Ev
 	if err != nil {
 		log.Fatalf("Unable to create event. %v\n", err)
 	}
-	fmt.Printf("Event created: %s\n", newEvent.HtmlLink)
+	fmt.Printf("Event created: %s\n", newEvent)
 }
