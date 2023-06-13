@@ -12,5 +12,5 @@ func UpdateCalendar(srv *calendar.Service, calendarId string, event *calendar.Ev
 	if err != nil {
 		log.Fatalf("Unable to update event. %v\n", err)
 	}
-	fmt.Printf("Event updated: %s\n", updatedEvent.HtmlLink)
+	fmt.Printf("Event updated: %s\n", updatedEvent)
 }
